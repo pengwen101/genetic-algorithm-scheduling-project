@@ -32,12 +32,14 @@ class GASchedule:
             for j in range(14):
                 subchromosome = []
                 for k in range(4):
-                    chosen_index = random.choice(range(len(product_list)))
-                    if(not chosen.count(chosen_index) and len(chosen)!=len(product_list)):
+                    if(len(chosen) == len(product_list)):
+                        subchromosome.append(product0.id)
+                    else:
+                        chosen_index = random.choice(range(len(product_list)))
+                        while(chosen.count(chosen_index)):
+                            chosen_index = random.choice(range(len(product_list)))
                         subchromosome.append(product_list[chosen_index].id)
                         chosen.append(chosen_index)
-                    else:
-                        subchromosome.append("0")
                 chromosome.append(subchromosome)
             self.population.append(chromosome)
     

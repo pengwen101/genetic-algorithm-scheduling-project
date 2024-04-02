@@ -29,17 +29,23 @@ class GASchedule:
         for i in range(self.population_size):
             chromosome = []
             chosen = []
+            duration = [0,0,0,0]
             for j in range(14):
                 subchromosome = []
                 for k in range(4):
-                    if(len(chosen) == len(product_list)):
-                        subchromosome.append("0")
+                    if(j!=0 and duration[k]!=1 and duration[k] != 0):
+                        subchromosome.append(chromosome[j-1][k])
+                        duration[k] -= 1
                     else:
-                        chosen_index = random.choice(range(len(product_list)))
-                        while(chosen.count(chosen_index)):
+                        if(len(chosen) == len(product_list)):
+                            subchromosome.append(product0.id)
+                        else:
                             chosen_index = random.choice(range(len(product_list)))
-                        subchromosome.append(product_list[chosen_index].id)
-                        chosen.append(chosen_index)
+                            while(chosen.count(chosen_index)):
+                                chosen_index = random.choice(range(len(product_list)))
+                            subchromosome.append(product_list[chosen_index].id)
+                            chosen.append(chosen_index)
+                            duration[k] = product_list[chosen_index].duration
                 chromosome.append(subchromosome)
             self.population.append(chromosome)
     
@@ -52,12 +58,26 @@ class GASchedule:
                 print()
             print()
     
-    # def fitness_value(chromosome):
-    #     #Maintenance schedule
-    #     fcms = None
-    #     for i in range(4):
-    #         for j in range(14):
-    #             product_id = chromosome[i][j]
+    def fcms(chromosome):
+        zero_count = [0,0,0,0]
+        fcms = 0
+        for i in range(14):
+            for j in range(4):
+                if (chromosome[i][j] == "0"):
+                    if(chromosome[i-1][j] != "0"):
+                        zero_count[i] = 1
+                    else:
+
+
+        return fcms
+    
+    def fitness_value(chromosome):
+        #Maintenance schedule
+        fcms = None
+
+        for i in range(4):
+            for j in range(14):
+                product_id = chromosome[i][j]
 
             
 

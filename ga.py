@@ -6,9 +6,11 @@ class Product:
     price = None
     machine = None
 
-    def __init__(self, id, duration):
+    def __init__(self, id, duration, price, machine):
         self.id = id
         self.duration = duration
+        self.price = price
+        self.machine = machine
 
 
 class GASchedule:
@@ -17,6 +19,7 @@ class GASchedule:
     mutation_rate = None
     population = None
     generation = None
+    machine = ["M1", "M2", "M3", "M4"]
 
 
     def __init__(self, population_size, crossover_rate, mutation_rate):
@@ -56,28 +59,38 @@ class GASchedule:
                 for k in range(len(self.population[i][j])):
                     print(self.population[i][j][k], end = " ")
                 print()
-            print()
+            print("FCMS:", self.fcms(self.population[i]))
     
-    def fcms(chromosome):
+    def fcms(self,chromosome):
         zero_count = [0,0,0,0]
         fcms = 0
         for i in range(14):
             for j in range(4):
                 if (chromosome[i][j] == "0"):
-                    if(chromosome[i-1][j] != "0"):
-                        zero_count[i] = 1
+                    if(zero_count[j] == 2):
+                        continue
+                    if(i != 0 and chromosome[i-1][j] == "0"):
+                        zero_count[j] += 1
                     else:
-
-
+                        zero_count[j] == 1
+        for i in zero_count:
+            if(zero_count[i] == 2):
+                fcms+=0.25
         return fcms
-    
-    def fitness_value(chromosome):
-        #Maintenance schedule
-        fcms = None
 
-        for i in range(4):
-            for j in range(14):
-                product_id = chromosome[i][j]
+    # def fcpd(self, chromosome):
+    #     duration = []
+    #     for i in range(14):
+    #         for j in range(4):
+    #             if(chromosome[i][j].machine.count(self.machine[j])):
+    #                 duration.append(chromosome[i][j].duration)
+
+    # #{3, 2, 2, 2, 1, 1, 1}
+
+    
+    # def fitness_value(self, chromosome):
+    #     #Maintenance schedule
+    #     return self.fcms(chromosome)
 
             
 
@@ -97,21 +110,21 @@ class GASchedule:
     #         self.create_population(product_list)
     #         selected_chromosome = self.select_best()
 
-sched = GASchedule(50, 0.1,0.1)
+sched = GASchedule(100, 0.1,0.1)
 
-product0 = Product("0", 0)
-product1 = Product("B1", 1)
-product2 = Product("B2", 2)
-product3 = Product("B3", 3)
-product4 = Product("B4", 2)
-product5 = Product("B5", 1)
-product6 = Product("B6", 4)
-product7 = Product("B7", 2)
-product8 = Product("B8", 1)
-product9 = Product("B9", 3)
-product10 = Product("B10", 2)
-product11 = Product("B11", 4)
-product12 = Product("B12", 5)
+product0 = Product("0", 0, 0, [])
+product1 = Product("B1", 1, 150000, ["M1"])
+product2 = Product("B2", 2, 200000, ["M1"])
+product3 = Product("B3", 3, 220000, ["M1"])
+product4 = Product("B4", 2, 300000, ["M1", "M4"])
+product5 = Product("B5", 1, 430000, ["M1", "M4"])
+product6 = Product("B6", 4, 345000, ["M2", "M4"])
+product7 = Product("B7", 2, 150000, ["M2", "M4"])
+product8 = Product("B8", 1, 400000, ["M2", "M4"])
+product9 = Product("B9", 3, 250000, ["M2"])
+product10 = Product("B10", 2, 300000, ["M2"])
+product11 = Product("B11", 4, 175000, ["M3"])
+product12 = Product("B12", 5, 125000, ["M3"])
 
 sched.create_population([product0, product1, product2, product3, product4, product1, product2, product3, product4, product1, product2, product3, product4, product1, product2, product3, product4])
 

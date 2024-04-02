@@ -33,7 +33,7 @@ class GASchedule:
                 subchromosome = []
                 for k in range(4):
                     if(len(chosen) == len(product_list)):
-                        subchromosome.append(product0.id)
+                        subchromosome.append("0")
                     else:
                         chosen_index = random.choice(range(len(product_list)))
                         while(chosen.count(chosen_index)):
@@ -93,7 +93,7 @@ product10 = Product("B10", 2)
 product11 = Product("B11", 4)
 product12 = Product("B12", 5)
 
-sched.create_population([product0, product1, product2, product3, product4, product0, product1, product2, product3, product4, product0, product1, product2, product3, product4, product0, product1, product2, product3, product4])
+sched.create_population([product0, product1, product2, product3, product4, product1, product2, product3, product4, product1, product2, product3, product4, product1, product2, product3, product4])
 
 sched.print_population()
 

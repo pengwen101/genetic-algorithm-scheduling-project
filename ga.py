@@ -21,17 +21,17 @@ class GASchedule:
     crossover_rate = None
     mutation_rate = None
     population = None
-    generation_count = None
+    generation = None
     machine = ["M1", "M2", "M3", "M4"]
     initial_size = None
     initial_product = {}
 
+    max_revenue = 0
 
-    def __init__(self, population_size, crossover_rate, mutation_rate, generation_count):
+    def __init__(self, population_size, crossover_rate, mutation_rate):
         self.population_size = population_size
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
-        self.generation_count = generation_count
     
     def create_population(self, product_list):
         for product in product_list:
@@ -75,23 +75,8 @@ class GASchedule:
             print("FCMS:", self.fcms(self.population[i]))
             print("FCPD:", self.fcpd(self.population[i]))
             print("FCPQA:", self.fcpqa(self.population[i]))
-
-    def selection(self, scores):
-        selected_ix = random.randint(0, self.population_size-1)
-        for ix in random.randint(0, self.population_size-1, 2):
-            if scores[ix] > scores[selected_ix]:
-                selected_ix = ix
-        
-        return(self.population[selected_ix])
-
-    def scores(self):
-        total_score = list()
-        for i in range (self.population_size):
-            total_score[i] = self.fcms(self.population[i]) + self.fcpd(self.population[i]) + self.fcms(self.population[i]) + self.fcfwe(self.population[i]) + self.fcr(self.population[i])
-        
-        return (total_score)
-    
-    
+            print("FCR: ", self.fcr(self.population[i]))
+            # print(self.max_revenue)
     
     def fcms(self,chromosome):
         zero_count = [0,0,0,0]
@@ -147,6 +132,48 @@ class GASchedule:
 
         return(score/(total_count-1))
 
+    
+    def fcr(self, chromosome):
+        duration = [0,0,0,0]
+        total_revenue = 0
+        for i in range(14):
+            for j in range(4):
+                if(chromosome[i][j].machine.count(self.machine[j])):
+                    if(i != 0 and chromosome[i-1][j] == chromosome[i][j] and duration[j] != 1):
+                        duration[j] -= 1
+                    else:
+                        duration[j] = chromosome[i][j].duration
+                    if(duration[j] == 1):
+                        # print("count", end=" ")
+                        total_revenue += chromosome[i][j].price
+        if(total_revenue > self.max_revenue):
+            self.max_revenue = total_revenue
+        return total_revenue/self.max_revenue
+
+    #{3, 2, 2, 2, 1, 1, 1}
+
+    
+    # def fitness_value(self, chromosome):
+    #     #Maintenance schedule
+    #     return self.fcms(chromosome)
+
+            
+
+    #     Efficiency per machine
+    #     evaluate through every machine, count the number of products (right ones)
+    #     rata2 differences per machine paling small
+
+        
+
+    
+    # def select_best(self):
+
+        
+    
+    # def genetic_algorithm(self, product_list):
+    #     for i in range(self.generation):
+    #         self.create_population(product_list)
+    #         selected_chromosome = self.select_best()
 
 sched = GASchedule(100, 0.1,0.1)
 

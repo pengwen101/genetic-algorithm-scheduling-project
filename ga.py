@@ -11,6 +11,9 @@ class Product:
         self.duration = duration
         self.price = price
         self.machine = machine
+     
+    def __str__(self):
+        return self.id
 
 
 class GASchedule:
@@ -21,6 +24,7 @@ class GASchedule:
     generation = None
     machine = ["M1", "M2", "M3", "M4"]
     initial_size = None
+    initial_product = {}
 
 
     def __init__(self, population_size, crossover_rate, mutation_rate):
@@ -29,6 +33,11 @@ class GASchedule:
         self.mutation_rate = mutation_rate
     
     def create_population(self, product_list):
+        for product in product_list:
+            if (product.id in self.initial_product):
+                self.initial_product[product.id] += 1
+            else:
+                self.initial_product[product.id] = 1
         self.population = []
         for i in range(self.population_size):
             chromosome = []
@@ -53,6 +62,7 @@ class GASchedule:
                 chromosome.append(subchromosome)
             self.population.append(chromosome)
         self.initial_size = len(product_list)-1
+
     
     def print_population(self):
         for i in range(len(self.population)):
@@ -63,6 +73,7 @@ class GASchedule:
                 print()
             print("FCMS:", self.fcms(self.population[i]))
             print("FCPD:", self.fcpd(self.population[i]))
+            print("FCPQA:", self.fcpqa(self.population[i]))
     
     def fcms(self,chromosome):
         zero_count = [0,0,0,0]
@@ -95,6 +106,28 @@ class GASchedule:
                         score+=1
         #duration = [3, 0, 0, 0]     
         return score/self.initial_size
+    
+    def fcpqa(self, chromosome):
+        duration = [0,0,0,0]
+        initial_product = self.initial_product.copy()
+
+        score = 0
+        for i in range(14):
+            for j in range(4):
+                    if(i != 0 and chromosome[i-1][j] == chromosome[i][j] and duration[j] != 1):
+                        duration[j] -= 1
+                    else:
+                        duration[j] = chromosome[i][j].duration
+                    if(duration[j] == 1):
+                        initial_product[chromosome[i][j].id] -=1
+        
+        total_count = 0
+        for key in self.initial_product:
+            difference = self.initial_product[key] - initial_product[key]
+            total_count += self.initial_product[key]
+            score += difference
+
+        return(score/(total_count-1))
 
     #{3, 2, 2, 2, 1, 1, 1}
 
@@ -141,6 +174,6 @@ sched.create_population([product0, product1, product2, product3, product4, produ
 
 sched.print_population()
 
-sched.fcpd()
+
 
 

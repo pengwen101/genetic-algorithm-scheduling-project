@@ -223,17 +223,22 @@ class GASchedule:
         randomize = random.random()
         print("\nRandom buat ngecek >= crossover_rate:", randomize)
         if randomize >= crossover_rate:
-            return parent1.copy(), parent2.copy()
+            return parent1.copy(), parent2.copy()        
         child1 = []
         child2 = []
         for i in range(14):
-            pengambilan_parent = random.random()
-            if pengambilan_parent < 0.5:
-                child1.append(parent1[i])
-                child2.append(parent2[i])
-            else:
-                child1.append(parent2[i])
-                child2.append(parent1[i])
+            child1_perbaris = []
+            child2_perbaris = []
+            for j in range(4):
+                pengambilan_parent = random.random()
+                if pengambilan_parent < 0.5:
+                    child1_perbaris.append(parent1[i][j])
+                    child2_perbaris.append(parent2[i][j])
+                else:
+                    child1_perbaris.append(parent2[i][j])
+                    child2_perbaris.append(parent1[i][j])
+            child1.append(child1_perbaris)
+            child2.append(child2_perbaris)
 
         return child1, child2
     
@@ -243,6 +248,8 @@ class GASchedule:
                 if random.random() < mutation_rate:
                     chosen_index = random.randint(0, len(self.initial_product) - 1)
                     chromosome[i][j] = random.choice(self.initial_product[chosen_index])
+
+
 
     def run(self, input):
         self.create_population(input)
@@ -278,7 +285,7 @@ class GASchedule:
         return [best, best_eval]
 
 
-sched = GASchedule(100, 0.1, 0.1, 500)
+sched = GASchedule(100, 0.6, 0.1, 500)
 
 product0 = Product("0", 0, 0, ["M1", "M2", "M3", "M4"])
 product1 = Product("B1", 1, 150000, ["M1", "M3"])
@@ -293,49 +300,49 @@ product9 = Product("B9", 3, 250000, ["M2"])
 product10 = Product("B10", 2, 300000, ["M2"])
 product11 = Product("B11", 4, 175000, ["M3"])
 product12 = Product("B12", 5, 125000, ["M3"])
-sched.run(
-    [
-        product0,
-        product1,
-        product2,
-        product3,
-        product4,
-        product1,
-        product2,
-        product3,
-        product4,
-        product1,
-        product2,
-        product3,
-        product4,
-        product1,
-        product2,
-        product3,
-        product4,
-    ]
-)
-# sched.create_population(
+# sched.run(
 #     [
 #         product0,
 #         product1,
 #         product2,
 #         product3,
 #         product4,
-#         product0,
 #         product1,
 #         product2,
 #         product3,
 #         product4,
-#         product0,
 #         product1,
 #         product2,
 #         product3,
 #         product4,
-#         product0,
 #         product1,
 #         product2,
 #         product3,
 #         product4,
 #     ]
 # )
+sched.create_population(
+    [
+        product0,
+        product1,
+        product2,
+        product3,
+        product4,
+        product0,
+        product1,
+        product2,
+        product3,
+        product4,
+        product0,
+        product1,
+        product2,
+        product3,
+        product4,
+        product0,
+        product1,
+        product2,
+        product3,
+        product4,
+    ]
+)
 sched.print_population()

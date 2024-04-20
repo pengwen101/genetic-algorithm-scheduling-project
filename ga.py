@@ -166,7 +166,26 @@ class GASchedule:
             score += difference
 
         return(score/(total_count-1))
+    
+    def crossover(self, parent1, parent2, crossover_rate):
+        randomize = random.random()
+        print("\nRandom buat ngecek >= crossover_rate:", randomize)
+        if randomize >= crossover_rate:
+            return parent1.copy(), parent2.copy()
+        child1 = []
+        child2 = []
+        for i in range(14):
+            pengambilan_parent = random.random()
+            if pengambilan_parent < 0.5:
+                child1.append(parent1[i])
+                child2.append(parent2[i])
+            else:
+                child1.append(parent2[i])
+                child2.append(parent1[i])
 
+        return child1, child2
+
+    
     def run(self, input):
         self.create_population(input)
         best = self.population[0]
@@ -196,7 +215,7 @@ class GASchedule:
             
             self.population = children
         return [best, best_eval]
-
+    
 
 sched = GASchedule(100, 0.1,0.1, 500)
 
@@ -213,11 +232,7 @@ product9 = Product("B9", 3, 250000, ["M2"])
 product10 = Product("B10", 2, 300000, ["M2"])
 product11 = Product("B11", 4, 175000, ["M3"])
 product12 = Product("B12", 5, 125000, ["M3"])
-
 sched.run([product0, product1, product2, product3, product4, product1, product2, product3, product4, product1, product2, product3, product4, product1, product2, product3, product4])
-
+# sched.create_population([product0, product1, product2, product3, product4, product0, product1, product2, product3, product4, product0, product1, product2, product3, product4, product0, product1, product2, product3, product4])
 sched.print_population()
-
-
-
 

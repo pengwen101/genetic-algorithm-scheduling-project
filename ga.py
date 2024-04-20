@@ -236,6 +236,13 @@ class GASchedule:
                 child2.append(parent1[i])
 
         return child1, child2
+    
+    def mutation(self, chromosome, mutation_rate):
+        for i in range(14):
+            for j in range(4):
+                if random.random() < mutation_rate:
+                    chosen_index = random.randint(0, len(self.initial_product) - 1)
+                    chromosome[i][j] = random.choice(self.initial_product[chosen_index])
 
     def run(self, input):
         self.create_population(input)

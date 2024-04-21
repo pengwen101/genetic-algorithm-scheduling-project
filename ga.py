@@ -122,13 +122,8 @@ class GASchedule:
         for i in range(self.population_size):
             total_score.append(
                  (self.fcms(self.population[i]))
-<<<<<<< Updated upstream
-                + (self.fctc(self.population[i]))
-                # + (10*self.fcpqa(self.population[i]))
-=======
                 + (8*self.fctc(self.population[i]))
                 + (self.fcpqa(self.population[i]))
->>>>>>> Stashed changes
             )
 
         return total_score
@@ -237,10 +232,7 @@ class GASchedule:
 
     def fctc(self, chromosome):
         score = 0
-<<<<<<< Updated upstream
-=======
         product_count = {}
->>>>>>> Stashed changes
         i_continue = [0,0,0,0]
         for i in range(14):
             for j in range(4):
@@ -256,10 +248,6 @@ class GASchedule:
                             score += 1
                             i_continue[j] = i+k+1
         
-<<<<<<< Updated upstream
-        return score/sum(self.initial_product.values())
-    
-=======
         for key in self.initial_product:
             if key in product_count:
                 difference = abs(product_count[key] - self.initial_product[key])
@@ -274,7 +262,6 @@ class GASchedule:
         #     print(key.id + ": " + str(value), end = " ")
 
         return 1/(score+1)
->>>>>>> Stashed changes
     
 
     def crossover(self, parent1, parent2, crossover_rate):
@@ -296,8 +283,6 @@ class GASchedule:
             product_parent1_machine_i = p1[i]
             product_parent2_machine_i = p2[i]
             for j in range(max(len(product_parent1_machine_i), len(product_parent2_machine_i))):
-<<<<<<< Updated upstream
-=======
                 # if(j < len(product_parent1_machine_i)):
                 #     key1, value1 = list(product_parent1_machine_i.items())[j]   
                 #     total_child1 = 0
@@ -340,7 +325,6 @@ class GASchedule:
                     
                 # if(skip_outer):
                 #     continue
->>>>>>> Stashed changes
 
                 randomize = random.random()
                 if(randomize < 0.5):
@@ -459,11 +443,7 @@ class GASchedule:
     #     return chromosome
 
 
-<<<<<<< Updated upstream
-sched = GASchedule(100, 0.3, 0.8, 100, 0.5)
-=======
 sched = GASchedule(1000, 0.8, 0.8, 300, 0.1)
->>>>>>> Stashed changes
 
 product0 = Product("0", 2, 0, ["M1", "M2", "M3", "M4"])
 product1 = Product("B1", 1, 150000, ["M1", "M3"])

@@ -122,8 +122,13 @@ class GASchedule:
         for i in range(self.population_size):
             total_score.append(
                  (self.fcms(self.population[i]))
+<<<<<<< Updated upstream
                 + (self.fctc(self.population[i]))
                 # + (10*self.fcpqa(self.population[i]))
+=======
+                + (8*self.fctc(self.population[i]))
+                + (self.fcpqa(self.population[i]))
+>>>>>>> Stashed changes
             )
 
         return total_score
@@ -232,6 +237,10 @@ class GASchedule:
 
     def fctc(self, chromosome):
         score = 0
+<<<<<<< Updated upstream
+=======
+        product_count = {}
+>>>>>>> Stashed changes
         i_continue = [0,0,0,0]
         for i in range(14):
             for j in range(4):
@@ -247,8 +256,25 @@ class GASchedule:
                             score += 1
                             i_continue[j] = i+k+1
         
+<<<<<<< Updated upstream
         return score/sum(self.initial_product.values())
     
+=======
+        for key in self.initial_product:
+            if key in product_count:
+                difference = abs(product_count[key] - self.initial_product[key])
+            else:
+                difference = self.initial_product[key]
+            score += difference
+        
+        # for key, value in product_count.items():
+        #     print(key.id + ": " + str(value), end = " ")
+        # print()
+        # for key, value in self.initial_product.items():
+        #     print(key.id + ": " + str(value), end = " ")
+
+        return 1/(score+1)
+>>>>>>> Stashed changes
     
 
     def crossover(self, parent1, parent2, crossover_rate):
@@ -262,12 +288,59 @@ class GASchedule:
         child1 = []
         child2 = []
 
+        skip_outer = False
+
         for i in range(4):
             product_child1_machine_i = {}
             product_child2_machine_i = {}
             product_parent1_machine_i = p1[i]
             product_parent2_machine_i = p2[i]
             for j in range(max(len(product_parent1_machine_i), len(product_parent2_machine_i))):
+<<<<<<< Updated upstream
+=======
+                # if(j < len(product_parent1_machine_i)):
+                #     key1, value1 = list(product_parent1_machine_i.items())[j]   
+                #     total_child1 = 0
+                #     for i in range(len(child1)):
+                #         for product, count in child1[i].items():
+                #             if(product == key1):
+                #                 total_child1 += count
+                #     if total_child1 == self.initial_product[key1]:
+                #         product_child2_machine_i.update({key1: value1})
+                #         skip_outer = True
+                #     if skip_outer == False:
+                #         total_child2 = 0
+                #         for i in range(len(child2)):
+                #             for product, count in child2[i].items():
+                #                 if(product == key1):
+                #                     total_child2 += count
+                #         if total_child2 == self.initial_product[key1]:
+                #             product_child1_machine_i.update({key1: value1})
+                #             skip_outer = True
+                # if skip_outer == False:
+                #     if(j < len(product_parent2_machine_i)):
+                #         key2, value2 = list(product_parent2_machine_i.items())[j]
+                #         total_child1 = 0
+                #         for i in range(len(child1)):
+                #             for product, count in child1[i].items():
+                #                 if(product == key2):
+                #                     total_child1 += count
+                #         if total_child1 == self.initial_product[key2]:
+                #             product_child2_machine_i.update({key2: value2})
+                #             skip_outer = True
+                #         if skip_outer == False:
+                #             total_child2 = 0
+                #             for i in range(len(child2)):
+                #                 for product, count in child2[i].items():
+                #                     if(product == key2):
+                #                         total_child2 += count
+                #             if total_child2 == self.initial_product[key2]:
+                #                 product_child2_machine_i.update({key2: value2})
+                #                 skip_outer = True
+                    
+                # if(skip_outer):
+                #     continue
+>>>>>>> Stashed changes
 
                 randomize = random.random()
                 if(randomize < 0.5):
@@ -348,7 +421,7 @@ class GASchedule:
             for i in range(0, self.population_size, 2):
                 p1, p2 = selected[i], selected[i + 1]
                 for c in self.crossover(p1, p2, self.crossover_rate):
-                    # self.mutation(c, self.mutation_rate)
+                    self.mutation(c, self.mutation_rate)
                     children.append(c)
             new_population.extend(children)
             self.population = new_population
@@ -357,18 +430,40 @@ class GASchedule:
         return [best, best_eval]
     
     def mutation(self, chromosome, mutation_rate):
-        for i in range(14):
-            for j in range(4):
-                if random.random() < mutation_rate:
-                    random_zero = random.random()
-                    if self.fcms(chromosome) < 1 and random_zero < 0.3:
-                        chromosome[i][j] = product0
-                    else:
-                        chromosome[i][j] = random.choice(list(self.initial_product.keys()))
-        return chromosome
+        p1 = self.list_to_dict(chromosome)
+    
+        temp = {i: {} for i in range(4)}
+
+        for i in range(4):
+            product_parent1_machine_i = p1[i]
+
+            if random.random() < mutation_rate:
+                items = list(product_parent1_machine_i.items())
+                random.shuffle(items)
+                hasil_shuffle = {key: value for key, value in items}
+                temp[i] = hasil_shuffle
+            else:
+                temp[i] = product_parent1_machine_i
+
+        return self.dict_to_list(temp)
+    
+    # def mutation(self, chromosome, mutation_rate):
+    #     for i in range(14):
+    #         for j in range(4):
+    #             if random.random() < mutation_rate:
+    #                 random_zero = random.random()
+    #                 if self.fcms(chromosome) < 1 and random_zero < 0.3:
+    #                     chromosome[i][j] = product0
+    #                 else:
+    #                     chromosome[i][j] = random.choice(list(self.initial_product.keys()))
+    #     return chromosome
 
 
+<<<<<<< Updated upstream
 sched = GASchedule(100, 0.3, 0.8, 100, 0.5)
+=======
+sched = GASchedule(1000, 0.8, 0.8, 300, 0.1)
+>>>>>>> Stashed changes
 
 product0 = Product("0", 2, 0, ["M1", "M2", "M3", "M4"])
 product1 = Product("B1", 1, 150000, ["M1", "M3"])
@@ -381,8 +476,8 @@ product7 = Product("B7", 2, 150000, ["M2", "M4"])
 product8 = Product("B8", 1, 400000, ["M2", "M4"])
 product9 = Product("B9", 3, 250000, ["M2"])
 product10 = Product("B10", 2, 300000, ["M2"])
-product11 = Product("B11", 4, 175000, ["M3"])
-product12 = Product("B12", 5, 125000, ["M3"])
+product11 = Product("B11", 2, 175000, ["M3"])
+product12 = Product("B12", 3, 125000, ["M3"])
 sched.run(
     [
         product1,
@@ -393,6 +488,10 @@ sched.run(
         product6,
         product7,
         product8,
+        product9,
+        product10,
+        product11,
+        product12,
         product1,
         product2,
         product3,

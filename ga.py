@@ -95,9 +95,9 @@ class GASchedule:
                 print()
 
     def print_fitness(self, chromosome):
-            # print("FCMS:", self.fcms(chromosome))
+            print("FCMS:", self.fcms(chromosome))
             print("FCTC:", self.fctc(chromosome))
-            # print("FCPQA:", self.fcpqa(chromosome))
+            print("FCPQA:", self.fcpqa(chromosome))
 
     def selection(self, scores):
         selected_ix = random.randint(0, self.population_size - 1)
@@ -123,7 +123,7 @@ class GASchedule:
             total_score.append(
                  (self.fcms(self.population[i]))
                 + (self.fctc(self.population[i]))
-                # + (10*self.fcpqa(self.population[i]))
+                + (self.fcpqa(self.population[i]))
             )
 
         return total_score
@@ -232,6 +232,9 @@ class GASchedule:
 
     def fctc(self, chromosome):
         score = 0
+        
+        product_count = {}
+
         i_continue = [0,0,0,0]
         for i in range(14):
             for j in range(4):
@@ -244,12 +247,47 @@ class GASchedule:
                                     valid = False
                                     break
                         if valid:
-                            score += 1
+                            if chromosome[i][j] not in product_count:
+                                product_count[chromosome[i][j]] = 1
+                            else:
+                                product_count[chromosome[i][j]] += 1
                             i_continue[j] = i+k+1
         
-        return score/sum(self.initial_product.values())
+        for key in product_count:
+            difference = abs(product_count[key] - self.initial_product[key])
+            score += difference
+
+        return 1/(score+1)
     
-    
+    def fcpqa(self, chromosome):
+
+        initial_product = self.initial_product.copy()
+
+        initial_product = {x: 0 for x in initial_product}
+        
+        score = 0
+        
+        i_continue = [0,0,0,0]
+
+        for i in range(14):
+            for j in range(4):
+                if(i_continue[j] <= i):
+                    if(chromosome[i][j] != product0):
+                        valid = True
+                        for k in range(0, chromosome[i][j].duration):
+                            if(i+k < 14):
+                                if(chromosome[i][j] != chromosome[i+k][j]):
+                                    valid = False
+                                    break
+                        if valid:
+                            initial_product[chromosome[i][j]] += 1
+                            i_continue[j] = i+k+1
+        
+        for key in initial_product:
+            difference = abs(self.initial_product[key] - initial_product[key])
+            score += 1/(difference+1)
+        
+        return score/len(self.initial_product)
 
     def crossover(self, parent1, parent2, crossover_rate):
         p1 = self.list_to_dict(parent1)

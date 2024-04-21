@@ -1,5 +1,6 @@
 #HANYA PAKE FCTC, CROSSOVER DIGANTI CARANYA
 
+import matplotlib.pyplot as plt
 import random
 
 class Product:
@@ -397,11 +398,16 @@ class GASchedule:
         self.create_population(input)
         best = self.population[0]
         best_eval = self.scores()[0]
+        generation_scores = []
 
         for gen in range(0, self.generation_count):
             scores = self.scores()
+            best_pop = scores[0]
 
             for i in range(self.population_size):
+                if scores[i] > best_pop:
+                    best_pop = scores[i]
+
                 if scores[i] > best_eval:
                     best = self.population[i]
                     best_eval = scores[i]
@@ -443,6 +449,16 @@ class GASchedule:
             self.population = new_population
 
             gen+=1
+
+            generation_scores.append(best_pop)
+
+        # Plot skor per generasi di luar loop generasi
+        plt.plot(range(1, self.generation_count + 1), generation_scores)
+        plt.xlabel("Generation")
+        plt.ylabel("Score")
+        plt.title("Generation vs. Score")
+        plt.grid(True)
+        plt.show()
         return [best, best_eval]
     
     def mutation(self, chromosome, mutation_rate):
@@ -508,15 +524,7 @@ best = sched.run(
         product1,
         product2,
         product3,
-        product4,
-        product5,
-        product6,
-        product7,
-        product8,
-        product9,
-        product10,
-        product11,
-        product12
+        product4
     ]
 )
 

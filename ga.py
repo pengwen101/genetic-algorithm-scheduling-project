@@ -248,6 +248,8 @@ class GASchedule:
                             i_continue[j] = i+k+1
         
         return score/sum(self.initial_product.values())
+    
+    
 
     def crossover(self, parent1, parent2, crossover_rate):
         p1 = self.list_to_dict(parent1)

@@ -306,6 +306,23 @@ class GASchedule:
             product_parent1_machine_i = p1[i]
             product_parent2_machine_i = p2[i]
             for j in range(max(len(product_parent1_machine_i), len(product_parent2_machine_i))):
+                
+                if(j < len(product_parent1_machine_i)):
+                    key1, value1 = list(product_parent1_machine_i.items())[j]
+                    if(key1 in product_child1_machine_i and product_child1_machine_i[key1] == self.initial_product[key1]):
+                        product_child2_machine_i.update({key1: value1})
+                        continue
+                    if(key1 in product_child2_machine_i and product_child2_machine_i[key1] == self.initial_product[key1]):
+                        product_child1_machine_i.update({key1: value1})
+                        continue
+                if(j < len(product_parent2_machine_i)):
+                    key2, value2 = list(product_parent2_machine_i.items())[j]
+                    if(key2 in product_child1_machine_i and product_child1_machine_i[key2] == self.initial_product[key2]):
+                        product_child2_machine_i.update({key2: value2})
+                        continue
+                    if(key2 in product_child2_machine_i and product_child2_machine_i[key2] == self.initial_product[key2]):
+                        product_child1_machine_i.update({key2: value2})
+                        continue
 
                 randomize = random.random()
                 if(randomize < 0.5):
@@ -406,7 +423,7 @@ class GASchedule:
         return chromosome
 
 
-sched = GASchedule(100, 0.3, 0.8, 100, 0.5)
+sched = GASchedule(200, 0.3, 0.8, 100, 0.5)
 
 product0 = Product("0", 2, 0, ["M1", "M2", "M3", "M4"])
 product1 = Product("B1", 1, 150000, ["M1", "M3"])

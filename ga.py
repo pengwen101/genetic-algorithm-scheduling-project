@@ -400,6 +400,7 @@ class GASchedule:
         best_eval = self.scores()[0]
         generation_scores = []
 
+
         for gen in range(0, self.generation_count):
             scores = self.scores()
             best_pop = scores[0]

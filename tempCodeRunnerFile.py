@@ -1,2 +1,2 @@
-                # + self.fcfwe(self.population[i])
-                # + self.fcr(self.population[i])
+if scores[i] > best_pop:
+                #     best_pop = scores[i]

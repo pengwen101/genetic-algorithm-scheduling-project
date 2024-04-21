@@ -1,5 +1,6 @@
 # HANYA PAKE FCTC, CROSSOVER DIGANTI CARANYA
 
+import matplotlib.pyplot as plt
 import random
 
 
@@ -105,9 +106,9 @@ class GASchedule:
                 print()
 
     def print_fitness(self, chromosome):
-        # print("FCMS:", self.fcms(chromosome))
+        print("FCMS:", self.fcms(chromosome))
         print("FCTC:", self.fctc(chromosome))
-        # print("FCPQA:", self.fcpqa(chromosome))
+        print("FCPQA:", self.fcpqa(chromosome))
 
     def selection(self, scores):
         selected_ix = random.randint(0, self.population_size - 1)
@@ -132,8 +133,8 @@ class GASchedule:
         for i in range(self.population_size):
             total_score.append(
                 (self.fcms(self.population[i]))
-                + (self.fctc(self.population[i]))
-                # + (10*self.fcpqa(self.population[i]))
+                + (8 * self.fctc(self.population[i]))
+                + (self.fcpqa(self.population[i]))
             )
 
         return total_score
@@ -241,6 +242,7 @@ class GASchedule:
 
     def fctc(self, chromosome):
         score = 0
+        product_count = {}
         i_continue = [0, 0, 0, 0]
         for i in range(14):
             for j in range(4):
@@ -255,10 +257,56 @@ class GASchedule:
                                     valid = False
                                     break
                         if valid:
-                            score += 1
+                            if chromosome[i][j] not in product_count:
+                                product_count[chromosome[i][j]] = 1
+                            else:
+                                product_count[chromosome[i][j]] += 1
                             i_continue[j] = i + k + 1
 
-        return score / sum(self.initial_product.values())
+        for key in self.initial_product:
+            if key in product_count:
+                difference = abs(product_count[key] - self.initial_product[key])
+            else:
+                difference = self.initial_product[key]
+            score += difference
+
+        # for key, value in product_count.items():
+        #     print(key.id + ": " + str(value), end = " ")
+        # print()
+        # for key, value in self.initial_product.items():
+        #     print(key.id + ": " + str(value), end = " ")
+
+        return 1 / (score + 1)
+
+    def fcpqa(self, chromosome):
+
+        initial_product = self.initial_product.copy()
+
+        initial_product = {x: 0 for x in initial_product}
+
+        score = 0
+
+        i_continue = [0, 0, 0, 0]
+
+        for i in range(14):
+            for j in range(4):
+                if i_continue[j] <= i:
+                    if chromosome[i][j] != product0:
+                        valid = True
+                        for k in range(0, chromosome[i][j].duration):
+                            if i + k < 14:
+                                if chromosome[i][j] != chromosome[i + k][j]:
+                                    valid = False
+                                    break
+                        if valid:
+                            initial_product[chromosome[i][j]] += 1
+                            i_continue[j] = i + k + 1
+
+        for key in initial_product:
+            difference = abs(self.initial_product[key] - initial_product[key])
+            score += 1 / (difference + 1)
+
+        return score / len(self.initial_product)
 
     def crossover(self, parent1, parent2, crossover_rate):
         p1 = self.list_to_dict(parent1)
@@ -279,6 +327,48 @@ class GASchedule:
             for j in range(
                 max(len(product_parent1_machine_i), len(product_parent2_machine_i))
             ):
+                # if(j < len(product_parent1_machine_i)):
+                #     key1, value1 = list(product_parent1_machine_i.items())[j]
+                #     total_child1 = 0
+                #     for i in range(len(child1)):
+                #         for product, count in child1[i].items():
+                #             if(product == key1):
+                #                 total_child1 += count
+                #     if total_child1 == self.initial_product[key1]:
+                #         product_child2_machine_i.update({key1: value1})
+                #         skip_outer = True
+                #     if skip_outer == False:
+                #         total_child2 = 0
+                #         for i in range(len(child2)):
+                #             for product, count in child2[i].items():
+                #                 if(product == key1):
+                #                     total_child2 += count
+                #         if total_child2 == self.initial_product[key1]:
+                #             product_child1_machine_i.update({key1: value1})
+                #             skip_outer = True
+                # if skip_outer == False:
+                #     if(j < len(product_parent2_machine_i)):
+                #         key2, value2 = list(product_parent2_machine_i.items())[j]
+                #         total_child1 = 0
+                #         for i in range(len(child1)):
+                #             for product, count in child1[i].items():
+                #                 if(product == key2):
+                #                     total_child1 += count
+                #         if total_child1 == self.initial_product[key2]:
+                #             product_child2_machine_i.update({key2: value2})
+                #             skip_outer = True
+                #         if skip_outer == False:
+                #             total_child2 = 0
+                #             for i in range(len(child2)):
+                #                 for product, count in child2[i].items():
+                #                     if(product == key2):
+                #                         total_child2 += count
+                #             if total_child2 == self.initial_product[key2]:
+                #                 product_child2_machine_i.update({key2: value2})
+                #                 skip_outer = True
+
+                # if(skip_outer):
+                #     continue
 
                 randomize = random.random()
                 if randomize < 0.5:
@@ -319,11 +409,16 @@ class GASchedule:
         self.create_population(input)
         best = self.population[0]
         best_eval = self.scores()[0]
+        generation_scores = []
 
         for gen in range(0, self.generation_count):
             scores = self.scores()
+            best_pop = scores[0]
 
             for i in range(self.population_size):
+                if scores[i] > best_pop:
+                    best_pop = scores[i]
+
                 if scores[i] > best_eval:
                     best = self.population[i]
                     best_eval = scores[i]
@@ -364,20 +459,46 @@ class GASchedule:
             self.population = new_population
 
             gen += 1
+
+            generation_scores.append(best_pop)
+
+        # Plot skor per generasi
+        plt.plot(range(1, self.generation_count + 1), generation_scores)
+        plt.xlabel("Generation")
+        plt.ylabel("Score")
+        plt.title("Generation vs. Score")
+        plt.grid(True)
+        plt.show()
         return [best, best_eval]
 
     def mutation(self, chromosome, mutation_rate):
-        for i in range(14):
-            for j in range(4):
-                if random.random() < mutation_rate:
-                    random_zero = random.random()
-                    if self.fcms(chromosome) < 1 and random_zero < 0.3:
-                        chromosome[i][j] = product0
-                    else:
-                        chromosome[i][j] = random.choice(
-                            list(self.initial_product.keys())
-                        )
-        return chromosome
+        p1 = self.list_to_dict(chromosome)
+
+        temp = {i: {} for i in range(4)}
+
+        for i in range(4):
+            product_parent1_machine_i = p1[i]
+
+            if random.random() < mutation_rate:
+                items = list(product_parent1_machine_i.items())
+                random.shuffle(items)
+                hasil_shuffle = {key: value for key, value in items}
+                temp[i] = hasil_shuffle
+            else:
+                temp[i] = product_parent1_machine_i
+
+        return self.dict_to_list(temp)
+
+    # def mutation(self, chromosome, mutation_rate):
+    #     for i in range(14):
+    #         for j in range(4):
+    #             if random.random() < mutation_rate:
+    #                 random_zero = random.random()
+    #                 if self.fcms(chromosome) < 1 and random_zero < 0.3:
+    #                     chromosome[i][j] = product0
+    #                 else:
+    #                     chromosome[i][j] = random.choice(list(self.initial_product.keys()))
+    #     return chromosome
 
 
 sched = GASchedule(100, 0.3, 0.8, 100, 0.5)
@@ -409,16 +530,9 @@ sched.run(
         product2,
         product3,
         product4,
-        product5,
-        product6,
-        product7,
-        product8,
-        # product9,
-        # product10,
-        # product11,
-        # product12
     ]
 )
+
 
 # sched.print_population()
 # sched.create_population(
